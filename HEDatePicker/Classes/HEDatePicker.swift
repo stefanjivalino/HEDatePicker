@@ -1,12 +1,3 @@
-//
-//  HEDatePicker.swift
-//  HEDatePicker
-//
-//  Created by Hassan on 8/11/17.
-//  Copyright © 2017 hassaneskandari. All rights reserved.
-//
-
-
 import UIKit
 import Foundation
 
@@ -88,7 +79,7 @@ public class HEDatePicker: UIControl {
     /**
     Handles the common initialization amongst all init()
     */
-    func commonInit() {     
+    func commonInit() {
         self.pickerView.dataSource = self
         self.pickerView.delegate = self
         
@@ -199,7 +190,7 @@ public class HEDatePicker: UIControl {
         let dateComponent = self.componentAtIndex(componentIndex)
         
         let value = self.rawValueForRow(row, inComponent: dateComponent)
-      
+        
         if dateComponent == HEDatePickerComponents.month {
             let dateFormatter = self.dateFormatter()
             return dateFormatter.monthSymbols[value - 1]
@@ -243,14 +234,21 @@ public class HEDatePicker: UIControl {
     fileprivate func maximumRangeForComponent(_ component : HEDatePickerComponents) -> Range<Int> {
         var calendarUnit : Calendar.Component
         if component == .year {
-            var currentYear = Date().year()
+            var currentYear = self.date.year()
             if self.calendar.identifier == .persian {
-                currentYear = Date().jalaali().year
+                currentYear = self.date.jalaali().year
             }
-          
+            
             return Range(uncheckedBounds: (lower: currentYear - numberofYears / 2, upper: currentYear + numberofYears / 2))
             
         } else if component == .day {
+//            var currentMonth = self.date.month()
+//            var currentYear = self.date.year()
+//            if self.calendar.identifier == .persian {
+//                currentMonth = self.date.jalaali().month
+//                currentYear = self.date.jalaali().year
+//            }
+//            return Range(uncheckedBounds: (lower: 1, upper: self.numberOfDaysForMonth(currentMonth, inYear: currentYear) + 1))
             calendarUnit = .day
         } else if component == .month {
             calendarUnit = .month
@@ -492,10 +490,6 @@ public class HEDatePicker: UIControl {
 // MARK: - Protocols
 // MARK: UIPickerViewDelegate
 extension HEDatePicker: UIPickerViewDelegate {
-    public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return font.lineHeight + 10
-    }
-
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let datePickerComponent = self.componentAtIndex(component)
         let value = self.rawValueForRow(row, inComponent: datePickerComponent)
@@ -540,10 +534,10 @@ extension HEDatePicker: UIPickerViewDelegate {
         label.textColor = self.textColor
         if self.calendar.identifier == .persian {
             label.text = self.titleForRow(row, inComponentIndex: component).changeNumbers()
-            label.textAlignment = .center
+            label.textAlignment = self.componentAtIndex(component) == .month ? .center : NSTextAlignment.center
         } else {
             label.text = self.titleForRow(row, inComponentIndex: component)
-            label.textAlignment = self.componentAtIndex(component) == .month ? .left : .right
+            label.textAlignment = self.componentAtIndex(component) == .month ? NSTextAlignment.left : NSTextAlignment.right
         }
         label.textColor = self.isRowEnabled(row, forComponent: self.componentAtIndex(component)) ? self.textColor : self.disabledTextColor
         
@@ -554,7 +548,7 @@ extension HEDatePicker: UIPickerViewDelegate {
         let widthBuffer = 25.0
         
         let calendarComponent = self.componentAtIndex(component)
-		let stringSizingAttributes = [NSAttributedString.Key.font : self.font]
+        let stringSizingAttributes = [NSAttributedString.Key.font : self.font]
         var size = 0.01
         
         if calendarComponent == .month {
@@ -562,25 +556,25 @@ extension HEDatePicker: UIPickerViewDelegate {
             
             // Get the length of the longest month string and set the size to it.
             for symbol in dateFormatter.monthSymbols as [String] {
-				let monthSize = NSString(string: symbol).size(withAttributes: stringSizingAttributes)
+                let monthSize = NSString(string: symbol).size(withAttributes: stringSizingAttributes)
                 size = max(size, Double(monthSize.width))
             }
         } else if calendarComponent == .day{
             // Pad the day string to two digits
             let dayComponentSizingString = NSString(string: "00")
-			size = Double(dayComponentSizingString.size(withAttributes: stringSizingAttributes).width)
+            size = Double(dayComponentSizingString.size(withAttributes: stringSizingAttributes).width)
         } else if calendarComponent == .year  {
             // Pad the year string to four digits.
             let yearComponentSizingString = NSString(string: "00")
-			size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
+            size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
         } else if calendarComponent == .hour  {
             // Pad the year string to four digits.
             let yearComponentSizingString = NSString(string: "00")
-			size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
+            size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
         } else if calendarComponent == .minute  {
             // Pad the year string to four digits.
             let yearComponentSizingString = NSString(string: "00")
-			size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
+            size = Double(yearComponentSizingString.size(withAttributes: stringSizingAttributes).width)
         } else if (calendarComponent == .space) {
             size = 20.0
         }
@@ -618,5 +612,3 @@ extension HEDatePicker: UIPickerViewDataSource {
         }
     }
 }
-
-
